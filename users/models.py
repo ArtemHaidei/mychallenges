@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
-from django.utils import timezone
+# from django.utils import timezone
+from django_countries.fields import CountryField
 
 
 class MyUserManager(BaseUserManager):
@@ -37,17 +38,24 @@ class MyUserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
+    temp_email = models.EmailField("temporary email", blank=True)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
-    date_joined = models.DateTimeField(default=timezone.now)
+    phone_number = models.CharField("phone", max_length=30, blank=True)
+    country = CountryField(blank_label="Not Selected", null=True, blank=True)
+    is_active = models.BooleanField('is_active', default=False)
+    is_staff = models.BooleanField('is_staff', default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     objects = MyUserManager()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
+    class Meta:
+        verbose_name = "user"
+        verbose_name_plural = "users"
+
     def __str__(self):
         return self.email
-
